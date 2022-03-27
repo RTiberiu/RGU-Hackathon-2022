@@ -9,11 +9,15 @@ $(document).ready(function() {
     let gameBoard = new Array(x).fill(new Array(y).fill(new Array(z)));
         
     // Ships points  
-    let shipI = [[7, 7, 6], [7, 6, 6], [7, 5, 6], [6, 7, 6], [6, 6, 6], [6, 5, 6]];
-    let shipII = [[2, 1, 4], [3, 1, 4], [4, 1, 4]];
-    let shipIII = [[9, 9, 1], [8, 9, 1], [7, 9, 1], [6, 9, 1], [5, 9, 1]];
-    let shipIV = [[5, 3, 3], [5, 4, 3]];
-    let shipV = [[1, 9, 5], [1, 8, 5]];
+    let ships = [
+        [[7, 7, 6], [7, 6, 6], [7, 5, 6], [6, 7, 6], [6, 6, 6], [6, 5, 6]],
+        [[2, 1, 4], [3, 1, 4], [4, 1, 4]],
+        [[9, 9, 1], [8, 9, 1], [7, 9, 1], [6, 9, 1], [5, 9, 1]],
+        [[5, 3, 3], [5, 4, 3]],
+        [[1, 9, 5], [1, 8, 5]]
+    ];
+
+    let boxes = [[]];
 
     // ----- Three JS ----- 
     // Setup scene and camera
@@ -26,6 +30,15 @@ $(document).ready(function() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    // Test camera
+    controls.enablePan = false;
+    // controls.maxPolarAngle = 0.05;
+    controls.maxPolarAngle = Math.PI / 2;
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+
     // Add plane to body 
     $('body').append(renderer.domElement);
 
@@ -34,6 +47,7 @@ $(document).ready(function() {
     const material = new THREE.MeshBasicMaterial({color: 0xFDB713, side: THREE.DoubleSide});
     const plane = new THREE.Mesh(geometry, material);
 
+    plane.rotation.x = 1.571;
     // Visualize segments
     const gridHelper = new THREE.GridHelper(10, 10);
     const gridHelperII = new THREE.GridHelper(10, 10);
@@ -41,8 +55,9 @@ $(document).ready(function() {
     scene.add(plane);
 
     // Set grid rotations
-    gridHelper.position.set(0, 5, 5);
-    gridHelperII.position.set(-5, 0, 5);
+    gridHelper.position.set(0, 0, 0);
+    gridHelperII.position.set(-5, 5, 0);
+    gridHelperIII.position.set(0, 5, -5);
     gridHelperIII.rotation.x = Math.PI / 2;
     gridHelperII.rotation.set(0, 0, 1.58);
     
@@ -52,20 +67,51 @@ $(document).ready(function() {
     scene.add(gridHelperIII);
 
     // Set camera positions
-    camera.position.set(0, -20, 40);
+    camera.position.set(0, -40, 20); // 0, -20, 40
     controls.update();
 
+    // Add box to plane
     function addBox(coordinates) {
         // Create the box and its lines
-        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        let boxGeo = new THREE.BoxGeometry(1, 1, 1);
         const edges = new THREE.EdgesGeometry(boxGeo);
         const boxLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0x5B1F0F}));
-        const boxMaterial = new THREE.MeshBasicMaterial({color: 0x2692FF});
-        const box = new THREE.Mesh(boxGeo, boxMaterial);
+        
+        const box = new THREE.Mesh(boxGeo);
+        
+        // Push box into array 
+        boxes[0].push(box);
 
-        let x = -4.5 + (coordinates[0] - 1);
-        let y = -4.5 + (coordinates[1] - 1);
-        let z = 0.5 + (coordinates[2] - 1);
+        // Choose box colors depending on hit, miss, or completed
+        let boxMaterial;
+        
+        if (coordinates[4] == true) {
+            // If completed
+
+            // Test arr point and index -- REPLACE WITH FUNCTION
+            let arrPoint = [[1, 1, 1], [1, 1, 2], [1, 1, 3]];
+            let index = 0;
+            
+            // Cycle through boxes and change all colors
+            console.log(arrPoint.length);
+            for (let x = 0; x < arrPoint.length; x++) {
+                console.log(boxes[index][x]);
+                boxes[index][x].material.color.setHex('0xFF4E1F');
+            }            
+        } else if (coordinates[3] == true) {
+            // If hit
+            box.material.color.setHex('0xFFCA1F');
+        } else {
+            // If miss
+            box.material.color.setHex('0x2692FF');
+        }
+
+        // Calculate position from parameter
+        let x = -4.5 + (coordinates[0] - 1);  
+        let y = 0.5 + (coordinates[2] - 1); // z -- because plane is rotated
+        let z = 4.5 - (coordinates[1] - 1); // y -- because plane is rotated
+        
+        
         // Set box and lines position 
         box.position.set(x, y, z);
         boxLine.position.set(x, y, z);
@@ -76,21 +122,35 @@ $(document).ready(function() {
     }
 
     // Creating a couple of test boxes by passing the coordinates (X, Y, Z) into the function
-    addBox([1, 1, 1]);
-    addBox([9, 4, 5]);
-    addBox([3, 7, 9]);
-    addBox([4, 7, 9]);
-    addBox([1, 1, 2]);
+    // X, Y, Z, hit, completed
+    addBox([1, 1, 1, true, false])
+    addBox([1, 1, 2, true, false]);;
+    addBox([1, 1, 3, true, true]);
+    addBox([10, 5, 1], false, false);
+
+    $('body').keydown(function(event) {
+        let key = String.fromCharCode(event.which);
+        // TODO Perfect rotation on Z axis 
+      
+
+        if (key = 'D') { 
+            // controls.target.set(10, 10, 0);
+        } else if (key = 'A') {
+            // camera.position.z += 5;
+        }
+    })
     
+    function rotate(event) {
+        console.log(event);
+    }
 
     // Animate function
     function animate() {
         requestAnimationFrame(animate);
 
         controls.update();
-        
         renderer.render(scene, camera);
-      
+        
     }
 
     // Start animating
