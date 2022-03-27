@@ -6,7 +6,6 @@ $(document).ready(function() {
     const xLimit = 10;
     const yLimit = 10;
     const zLimit = 7;
-    let gameBoard = new Array(xLimit).fill(new Array(yLimit).fill(new Array(zLimit)));
         
     // Ships points  
     let ships = [
@@ -18,8 +17,30 @@ $(document).ready(function() {
     ];
 
     var checkedPoints = [];
-    let shipBoxes = [];
+    let shipBoxes = [[],[],[],[],[]];
     let otherBoxes = [];
+
+    var shipObjects = [{
+        index: 0,
+        fields: 6,
+        hit: 0
+    }, {
+        index: 1,
+        fields: 3,
+        hit: 0
+    }, {
+        index: 2,
+        fields: 5,
+        hit: 0
+    }, {
+        index: 3,
+        fields: 2,
+        hit: 0
+    }, {
+        index: 4,
+        fields: 2,
+        hit: 0
+    }];
 
     // Players
     var player1 = {
@@ -76,16 +97,15 @@ $(document).ready(function() {
 
     function checkCoordinates(player) {
         console.log("Player's choice: " + JSON.stringify(player.choice));
-        if (checkCoordinatessHelper(player.choice, false)) {
+        var theResult = checkCoordinatessHelper(player.choice);
+        console.log("The result: ");
+        console.log(theResult);
+        addBox(theResult[0], theResult[1], theResult[2], theResult[3]);
+        if (theResult[1] == true) {
             alert('Congratulations, you hit a ship');
-            // Spawn box for hit
-            addBox(player.choice, true, false);
             player.score += 10;
             updateScore();
         } else {
-            // Spawn box for miss
-            addBox(player.choice, false, false);
-
             if (currentPlayer == player1) {
                 currentPlayer = player2;
             } else if (currentPlayer == player2) {
@@ -96,10 +116,12 @@ $(document).ready(function() {
         }
     } // end of outer Check coordinates function
 
-    function checkCoordinatessHelper(coordinates, returnShip) {
+    function checkCoordinatessHelper(coordinates) {
         let shipHit = false;
+        let shipSunk = false;
         let shipIndex = null;
         let theWholeShip = null;
+
 
         if (checkedPoints.length > 0) {
             for (let i = 0; i < checkedPoints.length; i++) {
@@ -114,30 +136,40 @@ $(document).ready(function() {
         for (var ship = 0; ship < ships.length; ship++) {
             for (let i = 0; i < ships[ship].length; i++) {
                 let co = ships[ship][i];
-                if (compareCoordinates(coordinates, co)) {
+                if (compareCoordinates(coordinates, co)
+                ) {
                     console.log("Jackpot!");
+
                     shipHit = true;
                     shipIndex = ship;
                     theWholeShip = ships[ship];
+
+                    shipObjects[shipIndex].hit++;
+                    if (shipObjects[shipIndex].hit == shipObjects[shipIndex].fields) {
+                        shipSunk = true;
+                    }
+
                 }
             } // end of level 3 for loop
         }
+        console.log(checkedPoints);
 
         if (!shipHit) { // ship not hit
-            return false;
+            console.log("No ship hit");
+            return [coordinates, false, false, -1];
         } else {
-            if (returnShip) { // ship hit, returnship == true
-                // Check if ship if completed
 
-                
-                let output = [shipIndex, theWholeShip];
-                // console.log(output);
-                return output;
+            if (shipSunk == false) { // ship hit, not sunken
+                console.log("Ship hit, not sunken");
+                console.log(coordinates, true, false, shipIndex);
+                return [coordinates, true, false, shipIndex];
 
             } else { // ship hit, returnship == false
-                return true;
+                console.log("Ship sunken");
+                return [coordinates, true, theWholeShip, shipIndex];
             }
         }
+
     } // end of helper function
 
     // ----- Three JS ----- 
@@ -195,12 +227,7 @@ $(document).ready(function() {
         
         // Push box into array
         if (hit) {
-            if (shipBoxes[shipIndex] == undefined) {
-                shipBoxes.push([]);
-                shipBoxes[shipIndex].push(box);
-            } else {
-                shipBoxes[shipIndex].push(box);
-            }
+            shipBoxes[shipIndex].push(box);
         } else {
             // If not part of ship, insert in generic boxes array
             otherBoxes.push(box);
@@ -239,7 +266,6 @@ $(document).ready(function() {
     // Animate function
     function animate() {
         requestAnimationFrame(animate);
-
         controls.update();
         renderer.render(scene, camera);
     }
