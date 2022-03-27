@@ -113,29 +113,35 @@ $(document).ready(function () {
         return gameOver;
     }
 
-    function checkCoordinates(player) {
+   function checkCoordinates(player) {
         console.log("Player's choice: " + JSON.stringify(player.choice));
         var theResult = checkCoordinatessHelper(player.choice);
-        console.log("The result: ");
-        console.log(theResult);
-        addBox(theResult[0], theResult[1], theResult[2], theResult[3]);
-        if (theResult[2] !== false) {
-            checkGameOver();
-        }
-        if (theResult[1] == true) {
-            // alert('Congratulations, you hit a ship');
-            player.score += 10;
-            updateScore();
-        } else {
-            if (currentPlayer == player1) {
-                currentPlayer = player2;
-            } else if (currentPlayer == player2) {
-                currentPlayer = player1;
+        if (theResult[0] !== false) {
+
+            console.log("The result: ");
+            console.log(theResult);
+            addBox(theResult[0], theResult[1], theResult[2], theResult[3]);
+            if (theResult[2] !== false) {
+                checkGameOver();
             }
-            updateScore();
-            // alert('You missed, ' + currentPlayer.name + ' is next');
+            if (theResult[1] == true) {
+                // alert('Congratulations, you hit a ship');
+                player.score += 10;
+                updateScore();
+            } else {
+                if (currentPlayer == player1) {
+                    currentPlayer = player2;
+                } else if (currentPlayer == player2) {
+                    currentPlayer = player1;
+                }
+                updateScore();
+                // alert('You missed, ' + currentPlayer.name + ' is next');
+            }
+        } else {
+            return;
         }
     } // end of outer Check coordinates function
+
 
     function checkCoordinatessHelper(coordinates) {
         let shipHit = false;
