@@ -22,25 +22,18 @@ $(document).ready(function() {
     // ----- Three JS ----- 
     // Setup scene and camera
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 1000);
-    
-
-    const renderer = new THREE.WebGLRenderer({antialias: true});
+    const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     renderer.setSize( window.innerWidth, window.innerHeight );
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
     // Test camera
     controls.enablePan = false;
-    // controls.maxPolarAngle = 0.05;
     controls.maxPolarAngle = Math.PI / 2;
 
-    function render() {
-        renderer.render(scene, camera);
-    }
-
     // Add plane to body 
-    $('body').append(renderer.domElement);
+    $('#board').append(renderer.domElement);
 
     // Creating the plane 
     const geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
@@ -67,7 +60,7 @@ $(document).ready(function() {
     scene.add(gridHelperIII);
 
     // Set camera positions
-    camera.position.set(0, -40, 20); // 0, -20, 40
+    camera.position.set(20, -40, 20); // 0, -20, 40
     controls.update();
 
     // Add box to plane
@@ -84,7 +77,7 @@ $(document).ready(function() {
 
         // Choose box colors depending on hit, miss, or completed
         let boxMaterial;
-        
+        console.log(coordinates);
         if (coordinates[4] == true) {
             // If completed
 
@@ -95,12 +88,11 @@ $(document).ready(function() {
             // Cycle through boxes and change all colors
             console.log(arrPoint.length);
             for (let x = 0; x < arrPoint.length; x++) {
-                console.log(boxes[index][x]);
                 boxes[index][x].material.color.setHex('0xFF4E1F');
             }            
         } else if (coordinates[3] == true) {
             // If hit
-            box.material.color.setHex('0xFFCA1F');
+            box.material.color.setHex('0x22A113');
         } else {
             // If miss
             box.material.color.setHex('0x2692FF');
@@ -126,23 +118,8 @@ $(document).ready(function() {
     addBox([1, 1, 1, true, false])
     addBox([1, 1, 2, true, false]);;
     addBox([1, 1, 3, true, true]);
-    addBox([10, 5, 1], false, false);
-
-    $('body').keydown(function(event) {
-        let key = String.fromCharCode(event.which);
-        // TODO Perfect rotation on Z axis 
-      
-
-        if (key = 'D') { 
-            // controls.target.set(10, 10, 0);
-        } else if (key = 'A') {
-            // camera.position.z += 5;
-        }
-    })
-    
-    function rotate(event) {
-        console.log(event);
-    }
+    addBox([5, 5, 4, true, false]);
+    addBox([10, 5, 1, false, false]);
 
     // Animate function
     function animate() {
@@ -150,7 +127,6 @@ $(document).ready(function() {
 
         controls.update();
         renderer.render(scene, camera);
-        
     }
 
     // Start animating

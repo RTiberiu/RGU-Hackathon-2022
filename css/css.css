@@ -1,3 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Ephesis&family=Oswald:wght@200&family=Cormorant+Garamond:ital,wght@1,400;1,700&family=Fira+Sans:wght@100;400&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing:border-box;
+}
+
 body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(40, 40, 40);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    display: inline;
 }
+
+header {
+    margin-top: 5vh;
+}
+
+h1, h2, h4, label {
+    color: rgb(202, 202, 202);
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    margin: 1vh 4vh;
+}
+
+h1 {
+    font-size: 7vh;
+}
+
+h2 {
+    font-size: 5vh;
+}
+
+h4, label {
+    font-size: 3.5vh;
+}
+
+#scoreTableWrapper, #form {
+    width: 40vw;
+    align-items: center;
+}
+
+
+input[type=text]:focus {
+    background: red;
+}
+
+#board {
+    position: absolute;
+    top: 15vh;
+    right: 5vw;
+    height: 85vh;
+    width: 70vw;
+    overflow: hidden;
+}
+
+canvas {
+    border: none !important;
+    outline: none !important;
+}
+

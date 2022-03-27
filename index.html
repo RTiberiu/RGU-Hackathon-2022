@@ -13,5 +13,46 @@
 </head>
 <body>
     
+    <header>
+        <h1>BattleShips</h1>
+    </header>
+
+    <main>
+       
+
+        <div id="form">
+            <h2>Enter the coordinates: </h2>
+            <form id="theForm" action="#">
+                <label for="fname">X: </label><br>
+                <input type="text" id="xCor" name="xCor"><br>
+                <label for="lname">Y:</label><br>
+                <input type="text" id="yCor" name="yCor"><br><br>
+                <label for="lname">Depth:</label><br>
+                <input type="text" id="depthCor" name="depthCor"><br><br>
+                <input type="submit" id="submit" value="Submit">
+            </form>
+        </div>
+        
+        <div id="scoreTableWrapper">
+            <h2>Score:</h2>
+            <div class="scoreTable">
+                <h4 id="whosMoving">Moving now: James</h4>
+                <div class="playerScore">
+                    <h4>James</h4>
+                    <p id="player1Score">0</p>
+                </div>
+                <div class="playerScore">
+                    <h4>Olaf</h4>
+                    <p id="player2Score">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="board"></div>
+    </main>
+    
+
+    
+    
 </body>
 </html>
