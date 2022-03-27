@@ -21,7 +21,7 @@ header {
     margin-top: 5vh;
 }
 
-h1, h2, h4, label {
+h1, h2, h4, label, p, th, td  {
     color: rgb(202, 202, 202);
     text-align: center;
     font-family: 'Cormorant Garamond', serif;
@@ -32,11 +32,11 @@ h1 {
     font-size: 7vh;
 }
 
-h2 {
+h2, p, th {
     font-size: 5vh;
 }
 
-h4, label {
+h4, label, td {
     font-size: 3.5vh;
 }
 
@@ -45,9 +45,32 @@ h4, label {
     align-items: center;
 }
 
+#submit, #finish {
+    margin: 0px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    border: 2px solid darkgray;
+}
+
+#submit:hover, #finish:hover {
+    background-color: #979595;
+    border: 2px solid black;
+}
+
+#form {
+    flex-flow: column wrap;
+    align-items: center;
+    text-align: center;
+}
+
 
 input[type=text]:focus {
-    background: red;
+    background: lightgray;
+}
+
+input {
+    margin-top: 1vh;
+    margin-bottom: 2vh;
 }
 
 #board {
@@ -63,4 +86,82 @@ canvas {
     border: none !important;
     outline: none !important;
 }
+
+#gameOver {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    min-height: 30vh;
+    max-height: 40vh;
+    width: 30vw;
+    left: 0;
+    top: 0;
+}
+
+#shipGameOver, #pointsGameOver {
+    display: block;
+    min-height: 30vh;
+    max-height: 40vh;
+    position: relative;
+    background: #DC9239;
+    overflow: auto; 
+}
+
+#shipGameOver th {
+    vertical-align: top;
+    padding-top: 2vh;
+    padding-left: 5vw;
+}
+
+#pointsGameOver th {
+    vertical-align: top;
+    padding-top: 2vh;
+    padding-left: 3.5vw;
+}
+
+#pointsGameOver td {
+    padding-left: 3.6vw; 
+}
+
+#shipGameOver td {
+    padding-left: 5vw;
+}
+
+th, td {
+    color:rgb(40, 40, 40) !important;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+  }
+
+::-webkit-scrollbar-thumb {
+background: rgb(202, 202, 202);
+border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: rgb(180, 180, 180);
+}
+
+::-webkit-scrollbar-track {
+background: #1F1F1F;
+}
+
+.scoreTable {
+    display: flex; /* or inline-flex */
+    justify-content: space-evenly;
+    font-weight: bold;
+    font-size: 4vh;
+  }
+
+  .playerScore {
+      display: flex;
+      margin-top: 3vh;
+      margin-bottom: 3vh;
+  }
+
+  .playerName {
+      margin-right: 3vh;
+  }
 

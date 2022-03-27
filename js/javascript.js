@@ -19,6 +19,7 @@ $(document).ready(function() {
     var checkedPoints = [];
     let shipBoxes = [[],[],[],[],[]];
     let otherBoxes = [];
+    let otherPoints = [];
 
     var shipObjects = [{
         index: 0,
@@ -56,14 +57,14 @@ $(document).ready(function() {
     }
     var currentPlayer = player1;
 
-    function submitChoice() {
+    function submitChoice() { // takes the player input (coordinates) from the html form
         let xChoice = $('#xCor').val();
         let yChoice = $('#yCor').val();
         let zChoice = $('#depthCor').val();
-        if (
-            (xChoice >= 0 && xChoice <= xLimit)
-            && (yChoice >= 0 && yChoice <= yLimit)
-            && (zChoice >= 0 && zChoice <= zLimit)
+        if (    // checks if the input values (coordinates) are within the specified ranges
+            (xChoice !== "" && xChoice > 0 && xChoice <= xLimit)
+            && (yChoice !== "" && yChoice > 0 && yChoice <= yLimit)
+            && (zChoice !== "" && zChoice > 0 && zChoice <= zLimit)
         ) {
             currentPlayer.choice = [xChoice, yChoice, zChoice];
             checkCoordinates(currentPlayer);
@@ -78,13 +79,13 @@ $(document).ready(function() {
         submitChoice();
     });
 
-    function updateScore() {
+    function updateScore() {  // updates the HTML page
         $('#player1Score').text(player1.score);
         $('#player2Score').text(player2.score);
         $('#whosMoving').text("Moving now: " + currentPlayer.name);
     }
 
-    function compareCoordinates(co1, co2) {
+    function compareCoordinates(co1, co2) { // updates the HTML page
         if (co1[0] == co2[0]
             && co1[1] == co2[1]
             && co1[2] == co2[2]
@@ -95,50 +96,78 @@ $(document).ready(function() {
         }
     }
 
-    function checkCoordinates(player) {
+    function checkGameOver() { // checks if all the ships have been sunk
+        let gameOver = true;
+        for (let i = 0; i < shipObjects.length; i++) {
+            if (shipObjects[i].hit !== shipObjects[i].fields) {
+                gameOver = false;
+                console.log("GameOver: " + gameOver + "snr: " + i);
+                console.log(shipObjects[i].hit + " / " + shipObjects[i].fields);
+                break;
+            }
+            console.log("GameOver: " + gameOver + "snr: " + i);
+            console.log(shipObjects[i].hit + " / " + shipObjects[i].fields);
+        }
+        if (gameOver == true) {
+            // Remove missed hits
+            otherBoxes.forEach(box => {
+                console.log(box);
+                scene.remove(box);
+            });
+            addGameOverDetails();
+        }
+        return gameOver;
+    }
+
+    function checkCoordinates(player) { // check the coordinates stored in the 'choice' field of 'player' object
         console.log("Player's choice: " + JSON.stringify(player.choice));
         var theResult = checkCoordinatessHelper(player.choice);
-        console.log("The result: ");
-        console.log(theResult);
-        addBox(theResult[0], theResult[1], theResult[2], theResult[3]);
-        if (theResult[1] == true) {
-            alert('Congratulations, you hit a ship');
-            player.score += 10;
-            updateScore();
-        } else {
-            if (currentPlayer == player1) {
-                currentPlayer = player2;
-            } else if (currentPlayer == player2) {
-                currentPlayer = player1;
+        if (theResult[0] !== false) { // If the coordinates haven't been already checked
+
+            console.log("The result: ");
+            console.log(theResult);
+            addBox(theResult[0], theResult[1], theResult[2], theResult[3]);
+            if (theResult[2] !== false) { // if a ship was just sunk
+                checkGameOver();
             }
-            updateScore();
-            alert('You missed, ' + currentPlayer.name + ' is next');
+            if (theResult[1] == true) { // if a ship was just hit
+                player.score += 10;
+                updateScore();
+            } else {    // players change turns
+                if (currentPlayer == player1) {
+                    currentPlayer = player2;
+                } else if (currentPlayer == player2) {
+                    currentPlayer = player1;
+                }
+                updateScore();
+            }
+        } else {
+            return;
         }
     } // end of outer Check coordinates function
 
     function checkCoordinatessHelper(coordinates) {
         let shipHit = false;
         let shipSunk = false;
-        let shipIndex = null;
-        let theWholeShip = null;
+        let shipIndex = null;   // the index of the shhip 0-4
+        let theWholeShip = null;    // full coordinates of the whole ship
 
 
         if (checkedPoints.length > 0) {
             for (let i = 0; i < checkedPoints.length; i++) {
                 if (compareCoordinates(checkedPoints[i], coordinates)) {
-                    console.log("Double!!! " + checkedPoints[i]);
-                    return false;
+                    alert("That field has already been checked");
+                    return [false, null, false, -1];
                 }
             }
         }
 
-        checkedPoints.push(coordinates);
+        checkedPoints.push(coordinates); // arrays with coordinates checked already
         for (var ship = 0; ship < ships.length; ship++) {
             for (let i = 0; i < ships[ship].length; i++) {
                 let co = ships[ship][i];
-                if (compareCoordinates(coordinates, co)
-                ) {
-                    console.log("Jackpot!");
+                if (compareCoordinates(coordinates, co)) {
+                    console.log("You hit a ship");
 
                     shipHit = true;
                     shipIndex = ship;
@@ -156,7 +185,7 @@ $(document).ready(function() {
 
         if (!shipHit) { // ship not hit
             console.log("No ship hit");
-            return [coordinates, false, false, -1];
+            return [coordinates, false, false, -1]; // values returned by this function are analysed by the mother function (CheckCoordinates)
         } else {
 
             if (shipSunk == false) { // ship hit, not sunken
@@ -181,7 +210,7 @@ $(document).ready(function() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    // Test camera
+    // More camera settings
     controls.enablePan = false;
     controls.maxPolarAngle = Math.PI / 2;
 
@@ -192,8 +221,8 @@ $(document).ready(function() {
     const geometry = new THREE.PlaneGeometry(10, 10, 10, 10);
     const material = new THREE.MeshBasicMaterial({color: 0xFDB713, side: THREE.DoubleSide});
     const plane = new THREE.Mesh(geometry, material);
-
     plane.rotation.x = 1.571;
+
     // Visualize segments
     const gridHelper = new THREE.GridHelper(10, 10);
     const gridHelperII = new THREE.GridHelper(10, 10);
@@ -207,7 +236,7 @@ $(document).ready(function() {
     gridHelperIII.rotation.x = Math.PI / 2;
     gridHelperII.rotation.set(0, 0, 1.58);
     
-    // gridHelper.rotation.set();
+    // Add grids to scene
     scene.add(gridHelper);
     scene.add(gridHelperII);
     scene.add(gridHelperIII);
@@ -216,6 +245,44 @@ $(document).ready(function() {
     camera.position.set(20, -40, 20); 
     controls.update();
 
+    // Add axis details
+    const fontLoader = new THREE.FontLoader();
+
+    fontLoader.load('fonts/Altona Sans_Regular.json', function (font) {
+        // Insert text for each square in axis
+        for (let i = 1; i < 11; i++) {
+            let text = i.toString();
+            let textGeo = new THREE.TextGeometry(text, {
+                font: font,
+                size: 0.5,
+                height: 0.1
+            });
+            let textMaterial = new THREE.MeshBasicMaterial({color: 0xFF7D02});
+
+            // Insert Z axis
+            let textMesh = new THREE.Mesh(textGeo, textMaterial);
+            scene.add(textMesh);
+            textMesh.position.set(-5, i - 1, 6);
+            textMesh.rotation.y = 1.5;
+
+            // Insert X axis
+            let textMeshI = new THREE.Mesh(textGeo, textMaterial);
+            scene.add(textMeshI);
+            textMeshI.position.set(-5 + i, 0, 6);
+            textMeshI.rotation.y = 1.5;
+            textMeshI.rotateX(-1.6);
+
+            // Insert Y axis
+            let textMeshII = new THREE.Mesh(textGeo, textMaterial);
+            scene.add(textMeshII);
+            textMeshII.position.set(6, 0, 5.8 + (-1 * i));
+            textMeshII.rotation.y = 1.5;
+            textMeshII.rotateX(-1.6);
+        }     
+    });
+
+    
+    
     // Add box to plane
     function addBox(coordinates, hit, completed, shipIndex) {
         // Create the box and its lines
@@ -231,7 +298,9 @@ $(document).ready(function() {
         } else {
             // If not part of ship, insert in generic boxes array
             otherBoxes.push(box);
+            otherPoints.push(coordinates);
         }
+
         
         // Choose box colors depending on hit, miss, or completed        
         if (completed != false) {
@@ -263,6 +332,55 @@ $(document).ready(function() {
         scene.add(boxLine);
     }
     
+    // Finish the game function
+    $('#finish').click(function() {
+        // Wait for ending the game before displaying game over
+        endGame().then(checkGameOver);
+    });
+
+    async function endGame() {
+        let time = 500;
+        ships.forEach(ship => {
+            ship.forEach(points => {
+                let result = checkCoordinatessHelper(points);
+                if (result != false) {
+                    // Delay 500ms on each iteration for visualization purposes
+                    setTimeout(function() {
+                        addBox(result[0], result[1], result[2], result[3]);
+                    }, time);
+                    time += 500;
+                }
+            })
+        }); 
+
+        return new Promise(function(resolve) {
+            setTimeout(function() {
+                resolve(true);
+            }, time);
+        });
+    }
+
+    // Add game over details
+    function addGameOverDetails() {
+        // Add ship table 
+        for (let x = 0; x < ships.length; x++) {
+            for (let y = 0; y < ships[x].length; y++) {
+                $('#shipGameOver').append('<tr>');
+                $('#shipGameOver').children(y).append('<td> Ship' + (x + 1) + '</td>')
+                $('#shipGameOver').children(y).append('<td> X' + ships[x][y][0] + ' Y' + ships[x][y][1] + ' Z' + ships[x][y][2] + '</td>');
+            }
+        }
+
+        // Add points data
+        for (let x = 0; x < otherPoints.length; x++) {
+            $('#pointsGameOver').append('<tr>');
+            $('#pointsGameOver').children(x).append('<td> Point' + (x + 1) + '</td>')
+            $('#pointsGameOver').children(x).append('<td> X' + otherPoints[x][0] + ' Y' + otherPoints[x][1] + ' Z' + otherPoints[x][2] + '</td>');
+        }
+
+        $('#gameOver').css('display', 'block');
+    }
+
     // Animate function
     function animate() {
         requestAnimationFrame(animate);

@@ -30,25 +30,44 @@
                 <label for="lname">Depth:</label><br>
                 <input type="text" id="depthCor" name="depthCor"><br><br>
                 <input type="submit" id="submit" value="Submit">
+                <input type="button" id="finish" value="Finish">
             </form>
         </div>
         
         <div id="scoreTableWrapper">
             <h2>Score:</h2>
             <div class="scoreTable">
-                <h4 id="whosMoving">Moving now: James</h4>
                 <div class="playerScore">
-                    <h4>James</h4>
+                    <p class="playerName">James</p>
                     <p id="player1Score">0</p>
                 </div>
                 <div class="playerScore">
-                    <h4>Olaf</h4>
+                    <p class="playerName">Olaf</p>
                     <p id="player2Score">0</p>
                 </div>
             </div>
+            <h4 id="whosMoving">Moving now: James</h4>
         </div>
 
         <div id="board"></div>
+
+        <div id="gameOver">
+            <table id="shipGameOver">
+                <tr>
+                    <th>Ship ID</th>
+                    <th>Location</th>
+                </tr>
+            </table>
+
+            <table id="pointsGameOver">
+                <tr>
+                    <th>Point ID</th>
+                    <th>Location</th>
+                </tr>
+            </table>
+        </div>
+
+        
     </main>
     
 
