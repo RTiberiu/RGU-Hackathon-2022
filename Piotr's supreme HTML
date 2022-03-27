@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <!-- \<script src='js/three.js'></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.js"
+        integrity="sha512-NLtnLBS9Q2w7GKK9rKxdtgL7rA7CAS85uC/0xd9im4J/yOL4F9ZVlv634NAM7run8hz3wI2GabaA6vv8vJtHiQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src='js/javascript.js'></script>
+    <link rel="stylesheet" href="css/css.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>BattleShips</h1>
+    </header>
+
+    <main>
+
+
+        <div id="form">
+            <h2>Enter the coordinates: </h2>
+            <form id="theForm" action="#">
+                <label for="fname">X: </label><br>
+                <input type="text" id="xCor" name="xCor"><br>
+                <label for="lname">Y:</label><br>
+                <input type="text" id="yCor" name="yCor"><br><br>
+                <label for="lname">Depth:</label><br>
+                <input type="text" id="depthCor" name="depthCor"><br><br>
+                <input type="submit" id="submit" value="Submit">
+            </form>
+        </div>
+
+        <div id="scoreTableWrapper">
+            <h2>Score:</h2>
+            <div class="scoreTable">
+                <div class="playerScore">
+                    <p class="playerName">James</p>
+                    <p id="player1Score">0</p>
+                </div>
+                <div class="playerScore">
+                    <p class="playerName">Olaf</p>
+                    <p id="player2Score">0</p>
+                </div>
+            </div>
+            <h4 id="whosMoving">Moving now: James</h4>
+        </div>
+
+        <div id="board"></div>
+
+        </div>
+    </main>
+
+
+
+
+</body>
+
+</html>
